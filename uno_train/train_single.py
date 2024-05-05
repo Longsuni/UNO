@@ -10,7 +10,7 @@ import torch.nn.functional as F
 from utils_pack.metrics import get_MSE, get_MAE, get_MAPE
 from utils_pack.utils import get_dataloader, print_model_parm_nums
 from utils_pack.args import get_args
-from model.UNO_coord import UNO
+from model.UNO import UNO
 import numpy as np
 
 args = get_args()
