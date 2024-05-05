@@ -15,7 +15,7 @@ import numpy as np
 
 args = get_args()
 
-save_path = 'experiments/incremental/{}-{}-{}'.format(
+save_path = '../experiments/incremental/{}-{}-{}'.format(
     args.model,
     args.dataset,
     args.n_channels)

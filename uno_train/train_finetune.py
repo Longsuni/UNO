@@ -14,7 +14,7 @@ import numpy as np
 
 args = get_args()
 
-save_path = 'experiments/finetune/{}-{}-{}'.format(
+save_path = '../experiments/finetune/{}-{}-{}'.format(
     args.model,
     args.dataset,
     args.n_channels)

@@ -13,7 +13,7 @@ import torch.nn.functional as F
 
 args = get_args()
 
-save_path = 'experiments/joint/{}-{}-{}'.format(
+save_path = '../experiments/joint/{}-{}-{}'.format(
     args.model,
     args.dataset,
     args.n_channels)
