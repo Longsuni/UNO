@@ -107,7 +107,6 @@ for task in train_sequence[task_id:]:
 
 
         for i, (c_map, f_map, exf) in enumerate(train_ds):
-            indices = random.sample(range(16 if f_map.size(0) >= 16 else 2), 4 if f_map.size(0) >= 16 else 2)
             model.train()
             optimizer.zero_grad()
             pred_f_map = model(c_map, exf) * args.scaler_Y

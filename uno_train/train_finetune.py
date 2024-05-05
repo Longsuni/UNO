@@ -124,17 +124,10 @@ for task in train_sequence[task_id:]:
 
         for i, (c_map, f_map, exf) in enumerate(train_ds):
 
-            indices = random.sample(range(16 if f_map.size(0) >= 16 else 2), args.sample if f_map.size(0) >= 16 else 2)
-
-            f_map_fate = f_map
-            for each in indices:
-                if each > 0:
-                    f_map_fate[each] = f_map[each - 1]
-
             model.train()
             optimizer.zero_grad()
             pred_f_map = model(c_map, exf) * args.scaler_Y
-            loss = criterion(pred_f_map, f_map_fate * args.scaler_Y)
+            loss = criterion(pred_f_map, f_map * args.scaler_Y)
             loss.backward()
             optimizer.step()
             train_loss += loss.item() * len(c_map)

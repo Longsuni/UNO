@@ -93,46 +93,29 @@ def get_dataloader_joint(args, datapath, dataset= "TaxiBJ", batch_size= 16, mode
                     datapath = os.path.join(ori_datapath, task)
                     datapath = os.path.join(datapath, task_mode)
                     if X is None:
-                        if dataset == "TaxiBJ":
-                            X = np.load(os.path.join(datapath, 'X.npy')) / args.scaler_X
-                            Y = np.load(os.path.join(datapath, 'Y.npy')) / args.scaler_Y
-                            ext = np.load(os.path.join(datapath, 'ext.npy'))
-                        elif dataset == "TaxiNYC":
-                            X = np.load(os.path.join(datapath, 'X_16.npy')) / args.scaler_X
-                            Y = np.load(os.path.join(datapath, 'X_64.npy')) / args.scaler_Y
-                            ext = np.load(os.path.join(datapath, 'ext.npy'))
+                        X = np.load(os.path.join(datapath, 'X.npy')) / args.scaler_X
+                        Y = np.load(os.path.join(datapath, 'Y.npy')) / args.scaler_Y
+                        ext = np.load(os.path.join(datapath, 'ext.npy'))
+
                     else:
-                        if dataset == "TaxiBJ":
-                            X = np.concatenate([X, np.load(os.path.join(datapath, 'X.npy'))], axis= 0) / args.scaler_X
-                            Y = np.concatenate([Y, np.load(os.path.join(datapath, 'Y.npy'))], axis= 0) / args.scaler_X
-                            ext = np.concatenate([ext, np.load(os.path.join(datapath, 'ext.npy'))], axis= 0)
-                        elif dataset == "TaxiNYC":
-                            X = np.concatenate([X, np.load(os.path.join(datapath, 'X_16.npy'))], axis= 0) / args.scaler_X
-                            Y = np.concatenate([Y, np.load(os.path.join(datapath, 'X_64.npy'))], axis= 0) / args.scaler_X
-                            ext = np.concatenate([ext, np.load(os.path.join(datapath, 'ext.npy'))], axis= 0)
+                        X = np.concatenate([X, np.load(os.path.join(datapath, 'X.npy'))], axis= 0) / args.scaler_X
+                        Y = np.concatenate([Y, np.load(os.path.join(datapath, 'Y.npy'))], axis= 0) / args.scaler_X
+                        ext = np.concatenate([ext, np.load(os.path.join(datapath, 'ext.npy'))], axis= 0)
 
             else:
                 print("# load {} datset {}".format(mode, task))
                 datapath = os.path.join(ori_datapath, task)
                 datapath = os.path.join(datapath, mode)
                 if X is None:
-                    if dataset == "TaxiBJ":
-                        X = np.load(os.path.join(datapath, 'X.npy')) / args.scaler_X
-                        Y = np.load(os.path.join(datapath, 'Y.npy')) / args.scaler_Y
-                        ext = np.load(os.path.join(datapath, 'ext.npy'))
-                    elif dataset == "TaxiNYC":
-                        X = np.load(os.path.join(datapath, 'X_16.npy')) / args.scaler_X
-                        Y = np.load(os.path.join(datapath, 'X_64.npy')) / args.scaler_Y
-                        ext = np.load(os.path.join(datapath, 'ext.npy'))
+                    X = np.load(os.path.join(datapath, 'X.npy')) / args.scaler_X
+                    Y = np.load(os.path.join(datapath, 'Y.npy')) / args.scaler_Y
+                    ext = np.load(os.path.join(datapath, 'ext.npy'))
+
                 else:
-                    if dataset == "TaxiBJ":
-                        X = np.concatenate([X, np.load(os.path.join(datapath, 'X.npy'))], axis= 0) / args.scaler_X
-                        Y = np.concatenate([Y, np.load(os.path.join(datapath, 'Y.npy'))], axis= 0) / args.scaler_X
-                        ext = np.concatenate([ext, np.load(os.path.join(datapath, 'ext.npy'))], axis= 0)
-                    elif dataset == "TaxiNYC":
-                        X = np.concatenate([X, np.load(os.path.join(datapath, 'X_16.npy'))], axis= 0) / args.scaler_X
-                        Y = np.concatenate([Y, np.load(os.path.join(datapath, 'X_64.npy'))], axis= 0) / args.scaler_X
-                        ext = np.concatenate([ext, np.load(os.path.join(datapath, 'ext.npy'))], axis= 0)
+                    X = np.concatenate([X, np.load(os.path.join(datapath, 'X.npy'))], axis= 0) / args.scaler_X
+                    Y = np.concatenate([Y, np.load(os.path.join(datapath, 'Y.npy'))], axis= 0) / args.scaler_X
+                    ext = np.concatenate([ext, np.load(os.path.join(datapath, 'ext.npy'))], axis= 0)
+
     else:
         shuffle = False
         task = sequence[task_id-1]
@@ -140,23 +123,15 @@ def get_dataloader_joint(args, datapath, dataset= "TaxiBJ", batch_size= 16, mode
         datapath = os.path.join(ori_datapath, task)
         datapath = os.path.join(datapath, mode)
         if X is None:
-            if dataset == "TaxiBJ":
-                X = np.load(os.path.join(datapath, 'X.npy')) / args.scaler_X
-                Y = np.load(os.path.join(datapath, 'Y.npy')) / args.scaler_Y
-                ext = np.load(os.path.join(datapath, 'ext.npy'))
-            elif dataset == "TaxiNYC":
-                X = np.load(os.path.join(datapath, 'X_16.npy')) / args.scaler_X
-                Y = np.load(os.path.join(datapath, 'X_64.npy')) / args.scaler_Y
-                ext = np.load(os.path.join(datapath, 'ext.npy'))
+            X = np.load(os.path.join(datapath, 'X.npy')) / args.scaler_X
+            Y = np.load(os.path.join(datapath, 'Y.npy')) / args.scaler_Y
+            ext = np.load(os.path.join(datapath, 'ext.npy'))
+
         else:
-            if dataset == "TaxiBJ":
-                X = np.concatenate([X, np.load(os.path.join(datapath, 'X.npy'))], axis= 0) / args.scaler_X
-                Y = np.concatenate([Y, np.load(os.path.join(datapath, 'Y.npy'))], axis= 0) / args.scaler_X
-                ext = np.concatenate([ext, np.load(os.path.join(datapath, 'ext.npy'))], axis= 0)
-            elif dataset == "TaxiNYC":
-                X = np.concatenate([X, np.load(os.path.join(datapath, 'X_16.npy'))], axis= 0) / args.scaler_X
-                Y = np.concatenate([Y, np.load(os.path.join(datapath, 'X_64.npy'))], axis= 0) / args.scaler_X
-                ext = np.concatenate([ext, np.load(os.path.join(datapath, 'ext.npy'))], axis= 0)
+            X = np.concatenate([X, np.load(os.path.join(datapath, 'X.npy'))], axis= 0) / args.scaler_X
+            Y = np.concatenate([Y, np.load(os.path.join(datapath, 'Y.npy'))], axis= 0) / args.scaler_X
+            ext = np.concatenate([ext, np.load(os.path.join(datapath, 'ext.npy'))], axis= 0)
+
 
     X = Tensor(np.expand_dims(X, 1))
     Y = Tensor(np.expand_dims(Y, 1))
@@ -172,47 +147,3 @@ def print_model_parm_nums(model, str):
     total_num = sum([param.nelement() for param in model.parameters()])
     print('{} params: {}'.format(str, total_num))
     return total_num
-
-
-def get_dataloader_chengdu(args, datapath, dataset="ChengDu", batch_size=16, mode='train', task_id=0, scale_x=1, scale_y=0):
-    cuda = True if torch.cuda.is_available() else False
-    Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
-
-    sequence = ['P1', 'P2', 'P3', 'P4']
-
-    ori_datapath = os.path.join(datapath, dataset)
-
-    if mode == 'train':
-        shuffle = True
-        datapath = os.path.join(ori_datapath, mode)
-        X = np.load(os.path.join(datapath, 'X.npy')) / args.scaler_X
-        Y = np.load(os.path.join(datapath, 'Y.npy')) / args.scaler_Y
-        ext = np.load(os.path.join(datapath, 'ext.npy'))
-
-    else:
-        shuffle = False
-        task = sequence[task_id - 1]
-        if mode == 'test':
-            print("# load {} datset {}".format(mode, task))
-        datapath = os.path.join(ori_datapath, mode)
-        X = np.load(os.path.join(datapath, 'X.npy')) / args.scaler_X
-        Y = np.load(os.path.join(datapath, 'Y.npy')) / args.scaler_Y
-        ext = np.load(os.path.join(datapath, 'ext.npy'))
-
-    X = Tensor(X)
-    Y = Tensor(Y)
-    ext = Tensor(ext)
-
-    if scale_x != 1:
-        X = sum_pooling(X, scale_x)
-
-    if scale_y != 0:
-        Y = sum_pooling(Y, scale_y)
-
-    assert len(X) == len(Y)
-    if mode != 'valid':
-        print('# {} samples: {}'.format(mode, len(X)))
-
-    data = torch.utils.data.TensorDataset(X, Y, ext)
-    dataloader = DataLoader(data, batch_size=batch_size, shuffle=shuffle)
-    return dataloader
