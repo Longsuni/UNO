@@ -6,7 +6,6 @@ This repository provides a reference implementation of the paper: *Enhancing Fin
 We implement ENHANCER and other FUFI methods with the following dependencies:
 * python 3.11.5
 * pytorch 2.1.2
-* numpy
 * einops
 * scikit-learn
 
