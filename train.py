@@ -1,6 +1,12 @@
 import os
 import random
 
+from model.other_model.CUFAR import CUFAR
+from model.other_model.DeepLGR import DeepLGR
+from model.other_model.FODE import FODE
+from model.other_model.UrbanFM import UrbanFM
+from model.other_model.UrbanODE import UrbanODE
+
 device = '0'
 os.environ["CUDA_VISIBLE_DEVICES"] = device
 import time
@@ -15,7 +21,7 @@ import numpy as np
 
 args = get_args()
 
-save_path = '../experiments/incremental/{}-{}-{}'.format(
+save_path = '../experiments/single-task/{}-{}-{}'.format(
     args.model,
     args.dataset,
     args.n_channels)
@@ -36,10 +42,36 @@ def get_learning_rate(optimizer):
 
 
 def choose_model():
-    model = UNO(height=args.height, width=args.width, use_exf=args.use_exf,
-                 scale_factor=args.scale_factor, channels=args.n_channels,
-                 sub_region=args.sub_region,
-                 scaler_X=args.scaler_X, scaler_Y=args.scaler_Y, args=args)
+    if args.model == 'UNO':
+        model = UNO(height=args.height, width=args.width, use_exf=args.use_exf,
+                    scale_factor=args.scale_factor, channels=args.n_channels,
+                    sub_region=args.sub_region,
+                    scaler_X=args.scaler_X, scaler_Y=args.scaler_Y, args=args)
+    elif args.model == 'CUFAR':
+        model = CUFAR(height=args.height, width=args.width, use_exf=args.use_exf,
+                      scale_factor=args.scale_factor, channels=args.n_channels,
+                      sub_region=args.sub_region,
+                      scaler_X=args.scaler_X, scaler_Y=args.scaler_Y, args=args)
+    elif args.model == 'UrbanFM':
+        model = UrbanFM(in_channels=1, out_channels=1, n_residual_blocks=16,
+                        base_channels=args.n_channels, img_width=args.width,
+                        img_height=args.height, ext_flag=args.use_exf,
+                        scaler_X=args.scaler_X, scaler_Y=args.scaler_Y)
+    elif args.model == 'FODE':
+        model = FODE(in_channels=1, out_channels=1, n_residual_blocks=16,
+                     base_channels=args.n_channels, img_width=args.width,
+                     img_height=args.height, ext_flag=args.use_exf,
+                     scaler_X=args.scaler_X, scaler_Y=args.scaler_Y)
+    elif args.model == 'UrbanODE':
+        model = UrbanODE(in_channels=1, out_channels=1, n_residual_blocks=16,
+                         base_channels=args.n_channels, img_width=args.width,
+                         img_height=args.height, ext_flag=args.use_exf,
+                         scaler_X=args.scaler_X, scaler_Y=args.scaler_Y)
+    elif args.model == 'DeepLGR':
+        model = DeepLGR(in_channels=1, out_channels=1, n_residual_blocks=12,
+                        base_channels=args.n_channels, img_width=args.width,
+                        img_height=args.height, ext_flag=args.use_exf, predictor='td',
+                        scaler_X=args.scaler_X, scaler_Y=args.scaler_Y)
     return model
 
 
@@ -64,9 +96,7 @@ train_sequence = ["P1", "P2", "P3", "P4"]
 total_mses = {"P1": [np.inf], "P2": [np.inf], "P3": [np.inf], "P4": [np.inf]}
 best_epoch = {"P1": 0, "P2": 0, "P3": 0, "P4": 0}
 
-
 task_id = 0
-
 start_time = time.time()
 for task in train_sequence[task_id:]:
 
@@ -94,8 +124,6 @@ for task in train_sequence[task_id:]:
                              batch_size=32, mode='test', task_id=task_id)
 
     for epoch in range(0,args.n_epochs):
-        if task_id >= 2:
-            model.load_state_dict(torch.load(r"temp.pt")['model_state_dict'])
 
         if epoch % 20 == 0 and epoch < 50:
             lr = lr * 0.5
@@ -107,32 +135,14 @@ for task in train_sequence[task_id:]:
                 param_group['lr'] = lr
 
         epoch_start_time = time.time()
-
         train_loss = 0
-        loss_fate = 0
+
+
         for i, (c_map, f_map, exf) in enumerate(train_ds):
-
-            indices = random.sample(range(16 if f_map.size(0) >= 16 else 2), args.sample if f_map.size(0) >= 16 else 2)
-            f_map_fate = f_map
-            if task_id >= 2:
-
-                selected_cmaps = c_map[indices]
-                selected_exf = exf[indices]
-                f_map_fate_indices = f_map[indices]
-                results = model(selected_cmaps, selected_exf)
-                loss_fate = criterion(results, f_map_fate_indices * args.scaler_Y)
-
-            for each in indices:
-                if each > 0:
-                    f_map_fate[each] = f_map[each - 1]
-
             model.train()
             optimizer.zero_grad()
             pred_f_map = model(c_map, exf) * args.scaler_Y
-
-            loss = criterion(pred_f_map, f_map_fate * args.scaler_Y)
-            if loss_fate is not None:
-                loss += loss_fate
+            loss = criterion(pred_f_map, f_map * args.scaler_Y)
             loss.backward()
             optimizer.step()
             train_loss += loss.item() * len(c_map)
@@ -155,7 +165,7 @@ for task in train_sequence[task_id:]:
 
             best_epoch[task] = epoch
             torch.save(state, '{}/best_epoch_{}.pt'.format(save_path, task))
-            torch.save(state, "temp.pt")
+
         total_mses[task].append(val_mse)
 
         log = ('Task:{}|Epoch:{}|Loss:{:.3f}|Val_MSE{:.3f}|Time_Cost:{:.2f}|Best_Epoch:{}|lr:{}\n'.format(
@@ -170,6 +180,7 @@ for task in train_sequence[task_id:]:
 
     model = load_model(task)
     model.eval()
+
     total_mse, total_mae, total_mape = 0, 0, 0
 
     for i, (c_map, f_map, eif) in enumerate(test_ds):

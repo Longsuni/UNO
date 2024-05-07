@@ -24,7 +24,6 @@ Before running the code, ensure the package structure of ENHANCER is as follows:
 │       └── P4
 ├── experiments
 ├── model
-├── uno_train
 └── utils_pack
 ```
 
