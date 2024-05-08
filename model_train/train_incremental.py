@@ -112,15 +112,26 @@ for task in train_sequence[task_id:]:
         loss_fate = 0
         for i, (c_map, f_map, exf) in enumerate(train_ds):
 
+            indices = random.sample(range(16 if f_map.size(0) >= 16 else 2), args.sample if f_map.size(0) >= 16 else 2)
+            f_map_fate = f_map
+            if task_id >= 2:
+                selected_cmaps = c_map[indices]
+                selected_exf = exf[indices]
+                f_map_fate_indices = f_map[indices]
+                results = model(selected_cmaps, selected_exf)
+                loss_fate = criterion(results, f_map_fate_indices * args.scaler_Y)
 
-
+            for each in indices:
+                if each > 0:
+                    f_map_fate[each] = f_map[each - 1]
 
             model.train()
             optimizer.zero_grad()
             pred_f_map = model(c_map, exf) * args.scaler_Y
 
-            loss = criterion(pred_f_map, f_map * args.scaler_Y)
-
+            loss = criterion(pred_f_map, f_map_fate * args.scaler_Y)
+            if loss_fate is not None:
+                loss += loss_fate
             loss.backward()
             optimizer.step()
             train_loss += loss.item() * len(c_map)
