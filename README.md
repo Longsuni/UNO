@@ -37,7 +37,7 @@ Before running the code, ensure the package structure of ENHANCER is as follows:
 
 ## Citing
 If you find UNO is useful in your research, please cite the following paper:
-```bibtex
+```
 @inproceedings{gao2024uno,
   title={Enhancing Fine-Grained Urban Flow Inference via Incremental Neural Operator},
   author={Qiang Gao, Xiaolong Song, Li Huang, Goce Trajcevski2, Fan Zhou and Xueqin Chen},
