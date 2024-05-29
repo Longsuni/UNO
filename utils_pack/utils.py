@@ -147,3 +147,5 @@ def print_model_parm_nums(model, str):
     total_num = sum([param.nelement() for param in model.parameters()])
     print('{} params: {}'.format(str, total_num))
     return total_num
+
+
