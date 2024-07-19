@@ -18,7 +18,7 @@ We implement ENHANCER and other FUFI methods with the following dependencies:
 TaxiBJ datasets can be obtained from the baseline [UrbanFM's repository](https://github.com/yoshall/UrbanFM/tree/master/data).
 
 ## Usage
-Before running the code, ensure the package structure of ENHANCER is as follows:
+Before running the code,ensure the package structure of ENHANCER is as follows:
 ```
 .
 ├── datasets
