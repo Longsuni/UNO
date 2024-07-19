@@ -40,7 +40,7 @@ If you find UNO is useful in your research, please cite the following paper:
 ```
 @inproceedings{gao2024uno,
   title={Enhancing Fine-Grained Urban Flow Inference via Incremental Neural Operator},
-  author={Qiang Gao, Xiaolong Song, Li Huang, Goce Trajcevski2, Fan Zhou and Xueqin Chen},
+  author={Qiang Gao, Xiaolong Song, Li Huang, Goce Trajcevski, Fan Zhou and Xueqin Chen},
   booktitle={IJCAI},
   year={2024}
 }
