@@ -100,8 +100,7 @@ def get_learning_rate(optimizer):
     return optimizer.param_groups[0]['lr']
 
 
-# EWC实现类
-class EWC:
+class EVC:
     def __init__(self, model, dataloader, criterion, cuda, args):
         self.model = model
         self.dataloader = dataloader
@@ -109,16 +108,13 @@ class EWC:
         self.cuda = cuda
         self.args = args
 
-        # 保存参数的均值和方差
         self.params = {n: p for n, p in self.model.named_parameters() if p.requires_grad}
-        self._means = {}  # 均值
-        self._vars = {}  # 方差
-        self._weights = {}  # Fisher 信息矩阵
+        self._means = {}
+        self._vars = {}
+        self._weights = {}
 
     def compute_weights(self):
-        """
-        计算 Fisher 信息矩阵作为权重。
-        """
+
         weights = {n: torch.zeros_like(p) for n, p in self.params.items()}
         self.model.eval()
 
@@ -131,24 +127,20 @@ class EWC:
             loss.backward()
             for n, p in self.params.items():
                 if p.grad is not None:
-                    weights[n] += (p.grad ** 2)  # 使用平方梯度作为 Fisher 信息
+                    weights[n] += (p.grad ** 2)
 
         for n in weights:
             weights[n] /= len(self.dataloader.dataset)
         self._weights = weights
 
     def save_params(self):
-        """
-        保存当前任务的参数分布（均值和方差）。
-        """
+
         for n, p in self.params.items():
             self._means[n] = p.clone().detach()
-            self._vars[n] = torch.ones_like(p) * 1e-4  # 初始化方差为小值
+            self._vars[n] = torch.ones_like(p) * 1e-4
 
     def penalty(self, model):
-        """
-        计算正则化项，结合均值和方差的约束。
-        """
+
         loss = 0
 
 
@@ -190,19 +182,16 @@ for task in train_sequence[task_id:]:
 
     # 在训练流程中替换EWC为NewEWC
     if task_id >= 2:
-        # 替换为新方法实例
-        new_ewc = EWC(model,
+        new_evc = EVC(model,
                          get_dataloader(args, total_datapath, args.dataset, args.batch_size, 'train', task_id - 1),
                          criterion, cuda, args)
-        new_ewc.compute_weights()
-        new_ewc.save_params()
+        new_evc.compute_weights()
+        new_evc.save_params()
 
     for epoch in range(0,60):
         if task_id >= 2:
             if epoch == 0:
                 model = load_model(model,train_sequence[task_id-2])
-            # else:
-            #     model.load_state_dict(torch.load(r"temp.pt")['model_state_dict'])
 
 
         if epoch % 10 == 0 and epoch < 50:
@@ -228,14 +217,6 @@ for task in train_sequence[task_id:]:
                 if each > 0:
                     f_map_fate[each] = f_map[each - 1]
 
-            # if task_id >= 2:
-            #     selected_cmaps = c_map[indices]
-            #     selected_exf = exf[indices]
-            #     f_map_fate_indices = f_map[indices]
-            #     results = model(selected_cmaps, selected_exf,road_map)
-            #     loss_fate = criterion(results, f_map_fate_indices * args.scaler_Y)
-
-
 
             model.train()
             optimizer.zero_grad()
@@ -244,12 +225,10 @@ for task in train_sequence[task_id:]:
 
 
             loss = criterion(pred_f_map, f_map_fate * args.scaler_Y)
-            # if loss_fate is not None:
-            #     loss += loss_fate
 
             # 添加EWC正则项
-            if new_ewc:
-                loss_ewc = new_ewc.penalty(model)
+            if new_evc:
+                loss_ewc = new_evc.penalty(model)
                 # print(loss_ewc)
                 loss += 0.001 * loss_ewc
 

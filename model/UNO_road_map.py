@@ -245,7 +245,7 @@ class UNO(nn.Module):
 
             x = self.relu(
                 nn.functional.grid_sample(x, coor_hr.flip(-1), mode='bilinear', align_corners=False))  # [N, C, hr, hr]
-            x = self.ic_layer(x) # 对输出应用网格采样，随后经过 IC_layer 处理
+            x = self.ic_layer(x)
 
             global_x = x
 
